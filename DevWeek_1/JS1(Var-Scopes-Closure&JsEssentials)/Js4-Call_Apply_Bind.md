@@ -176,3 +176,6 @@ fn(); // Nirmal ✅
 ## 🧠 ONE-LINE MEMORY
 
 👉 “call/apply run now, bind prepares for later”
+
+
+
