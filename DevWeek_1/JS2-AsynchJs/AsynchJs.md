@@ -532,3 +532,196 @@ You will:
 * Clear 5–6 LPA interviews comfortably
 
 ---
+
+
+MINI DEV TASK 3 — API REQUEST WRAPPER (PROBLEM STATEMENT)
+Objective
+
+Design a reusable function that standardizes how your application makes HTTP API requests.
+
+You must ensure:
+
+consistent response format
+proper error handling
+production-level reliability features (timeout + retry)
+PART 1 — CORE REQUIREMENT
+Implement a function:
+apiRequest(url, options?)
+Behavior:
+
+This function should:
+
+Make an HTTP request using fetch
+Handle all success and failure cases
+Always return a consistent object shape
+REQUIRED RETURN FORMAT
+
+Regardless of success or failure, the function must return:
+
+{
+  ok: boolean,
+  data: any,
+  error: string | null,
+  status: number
+}
+RULES (MANDATORY)
+1. Handle successful responses
+
+If response status is 2xx:
+
+ok: true
+data: parsed JSON
+error: null
+2. Handle non-2xx responses (VERY IMPORTANT)
+
+If response status is NOT 2xx:
+
+Do NOT treat as success
+Extract error message (if possible)
+Return:
+{
+  ok: false,
+  data: null,
+  error: "error message",
+  status: response.status
+}
+3. Handle network failures
+
+Examples:
+
+no internet
+DNS failure
+request blocked
+
+Return:
+
+{
+  ok: false,
+  data: null,
+  error: "Network Error",
+  status: 0
+}
+
+
+# 🧠 AbortController — Quick Notes
+
+## 📌 What it is
+
+```text
+AbortController lets you cancel async operations (mainly fetch requests)
+```
+
+---
+
+## 🧩 Why we need it
+
+* User navigates away → cancel request
+* Typing search → cancel previous API call
+* Avoid unnecessary work / memory leaks
+
+---
+
+## 🔧 Core parts
+
+### 1. controller
+
+```js
+const controller = new AbortController();
+```
+
+### 2. signal
+
+```js
+controller.signal
+```
+
+👉 passed into async operation
+
+---
+
+## 🚀 Basic Usage
+
+```js
+const controller = new AbortController();
+
+fetch("https://api.example.com/data", {
+  signal: controller.signal
+})
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => {
+    if (err.name === "AbortError") {
+      console.log("Request cancelled");
+    }
+  });
+
+// cancel request
+controller.abort();
+```
+
+---
+
+## 🧠 How it works (internally idea)
+
+```text
+controller → creates a signal
+signal → attached to fetch
+abort() → tells signal to stop
+fetch listens → throws AbortError
+```
+
+---
+
+## ⚡ Flow
+
+```text
+start fetch
+   ↓
+attach signal
+   ↓
+call abort()
+   ↓
+fetch stops
+   ↓
+catch → AbortError
+```
+
+---
+
+## 🔥 Important Points
+
+* `abort()` immediately stops request
+* fetch throws error → must handle in `.catch`
+* same controller can cancel multiple requests (if reused)
+
+---
+
+## 🧠 Real Example (Search typing)
+
+```js
+let controller;
+
+function search(query) {
+  if (controller) controller.abort(); // cancel previous
+
+  controller = new AbortController();
+
+  fetch(`/api?q=${query}`, {
+    signal: controller.signal
+  })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => {
+      if (err.name === "AbortError") return;
+      console.error(err);
+    });
+}
+```
+
+---
+
+## 🎯 One-line memory
+
+```text
+AbortController = “start request + ability to cancel it anytime”
+```
