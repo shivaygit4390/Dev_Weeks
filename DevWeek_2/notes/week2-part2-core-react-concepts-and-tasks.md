@@ -697,11 +697,13 @@ Build a list of users where new users can be added and existing users can be rem
 
 ### Required features
 
+
 - initial array of users
 - render list on screen
 - button to remove one user
 - form or simple input to add new user
 - unique stable id for each user
+
 
 ### Logic you should practice
 
@@ -1500,6 +1502,237 @@ Best next move:
 3. then move in the recommended order
 4. keep your final versions ready for the UI Playground app
 
+---
+
+## 21. Week 2 Priority Filter for 5 LPA
+
+This section is the practical filter if your goal is:
+
+- get interview-ready fast
+- avoid getting stuck doing every small extra
+- focus on what matters most for a `5 LPA` style role
+
+### A. Must Not Skip
+
+These are the Week 2 things you should definitely do.
+
+#### 1. Components + JSX + Props
+
+Must do:
+
+- make at least one reusable component like `UserCard`
+- pass props from parent
+- render multiple cards or multiple uses of the same component
+- understand JSX basics
+
+#### 2. State with `useState`
+
+Must do:
+
+- one simple state task like color/theme changer
+- one logic-based state task like counter constraints
+
+#### 3. Conditional Rendering - Basic Level
+
+Must do:
+
+- basic login toggle or show/hide UI task
+
+Important:
+
+```txt
+Do not skip conditional rendering completely.
+Only skip the deeper add-on if needed.
+```
+
+#### 4. Lists & Keys - Basic Level
+
+Must do:
+
+- render a list using `map`
+- use stable `key`
+- understand why keys matter
+
+#### 5. Events
+
+Must do:
+
+- handle clicks properly
+- connect event to state update
+
+#### 6. Controlled Forms - Basic Level
+
+Must do:
+
+- make at least one proper controlled form
+- use `value` and `onChange`
+- use `onSubmit`
+
+#### 7. Basic Dev Hygiene
+
+Must do:
+
+- do not keep everything in one file
+- separate at least `components` and `tasks/pages`
+- know what ESLint and Prettier are
+
+---
+
+### B. Good to Do, But Can Be Light
+
+These are useful, but they do not need perfection right now.
+
+#### 1. Multi-step form
+
+Good to do:
+
+- build it once
+- keep previous values
+- move next/prev properly
+
+But:
+
+```txt
+It does not need to become a polished production wizard.
+```
+
+#### 2. Immutable edit in list task
+
+Good to do:
+
+- at least understand updating arrays/objects immutably
+
+#### 3. Basic manual validation
+
+Good to do:
+
+- empty check
+- email basic check
+- password match check
+
+#### 4. TypeScript starter
+
+Good to do:
+
+- type 1 or 2 simple props objects
+
+But:
+
+```txt
+Do not get stuck on TS syntax if it slows your React learning.
+```
+
+#### 5. Weekend UI Playground app
+
+Good to do:
+
+- combine several tasks in one app
+
+But:
+
+```txt
+It can stay small and simple.
+```
+
+---
+
+### C. Safe to Skip for Now If Time Is Tight
+
+These are the first things you can postpone.
+
+#### 1. `RequireAuth` wrapper add-on
+
+Safe to postpone if:
+
+- you already understand basic conditional rendering
+
+#### 2. React Router basics
+
+Safe to postpone for now if:
+
+- your core React basics are still shaky
+
+#### 3. Perfect styling
+
+Safe to postpone.
+
+Readable UI is enough.
+
+#### 4. Full TypeScript conversion
+
+Safe to postpone.
+
+Do not let TypeScript block Week 2 progress.
+
+#### 5. Advanced polish in every mini task
+
+Safe to postpone.
+
+For example:
+
+- fancy validation UI
+- perfect spacing
+- too much refactoring
+- extra abstraction too early
+
+---
+
+### D. What You Should Not Skip Even If You Skip Add-ons
+
+If you skip all add-ons, you should still make sure these basics are done well:
+
+- reusable component with props
+- at least one solid state task
+- at least one conditional rendering task
+- at least one list rendering task with keys
+- at least one form with controlled inputs
+- basic file structure
+
+If these are done properly, you are still on track.
+
+If these are also weak, then skipping add-ons becomes dangerous.
+
+---
+
+### E. Best 5 LPA Week 2 Minimum
+
+If your time is tight, this is the Week 2 minimum set I would keep:
+
+1. `UserCard`
+2. `ThemeChanger` or color changer
+3. `CounterConstraints`
+4. login toggle UI
+5. user list render with proper keys
+6. one signup form with controlled inputs
+7. basic structure into separate components
+
+If you finish these properly and can explain them, that is meaningful progress.
+
+---
+
+### F. Best 5 LPA Add-ons to Keep
+
+If you keep only a few extras, keep these:
+
+1. basic manual validation in form
+2. immutable update understanding
+3. very light TypeScript props typing
+
+These give much better value than trying to do every optional thing.
+
+---
+
+### G. Final Decision Rule
+
+Use this rule:
+
+```txt
+Do all core tasks.
+Do only high-value add-ons.
+Skip polish-heavy or time-heavy extras if they slow progress.
+```
+
+That is the right balance for your current target.
 
 
 
