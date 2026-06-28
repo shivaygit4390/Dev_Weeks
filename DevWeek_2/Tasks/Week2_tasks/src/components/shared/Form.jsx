@@ -16,6 +16,8 @@ const Form = ({ first, second, header, handleChange, next, prev, name1, name2, v
       <div>{header}</div>
       <div className="p-5 bg-cyan-700">{header}</div>
       <form onSubmit={handleSubmit}>
+        {/* Review step has no inputs.
+            Earlier steps reuse the same two-input layout. */}
         {header !== 'Review' ? (
           <>
             <label>

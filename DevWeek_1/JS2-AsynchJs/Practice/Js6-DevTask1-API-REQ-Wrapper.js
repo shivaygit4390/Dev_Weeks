@@ -67,6 +67,12 @@
 // }
 
 
+/*
+  Revision purpose:
+  - create one reusable API helper
+  - always return one consistent response shape
+*/
+
 async function apiRequest(url, options = {}){
     try{
         let res = await fetch(url, options);
@@ -74,7 +80,7 @@ async function apiRequest(url, options = {}){
         let status = res.status;
 
         let data;
-//try catch req to frtch data as data might be come like empty page
+// Parsing may fail if response body is empty or not valid JSON.
         try{
             //parsing data to json takes time so use await
             data = await res.json();
@@ -85,6 +91,7 @@ async function apiRequest(url, options = {}){
             return{
                 ok : false,
                 data : null,
+                // Failure still follows same shape as success branch.
                 error : data || "request failed",
                 status
             }

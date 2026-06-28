@@ -50,6 +50,12 @@
 // safer object handling
 // prevents accidental side effects
 
+/*
+  Revision purpose:
+  - immutable top-level object update
+  - understand why direct mutation is unsafe in UI state logic
+*/
+
 const user = {
   name: "Nirmal",
   city: "Lucknow"
@@ -68,4 +74,5 @@ const updateCity = (user, newCity) => {
 };
 
 console.log(updateCity(user, "Delhi")); // { name: "Nirmal", city: "Delhi" }
+// Original object stays unchanged because we returned a copied object.
 console.log(user); // original object remains unchanged

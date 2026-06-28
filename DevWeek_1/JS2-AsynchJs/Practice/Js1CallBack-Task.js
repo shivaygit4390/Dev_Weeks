@@ -64,9 +64,16 @@
 
 // 👉 This is **Callback Hell**
 
+/*
+  Revision purpose:
+  - feel the callback hell problem before promises
+  - trace how one async step passes data to the next callback
+*/
+
 function login(cb){
     setTimeout(() =>{
         console.log("logged in user");
+        // This callback receives the result of login.
         cb("userid");
     },1000)
 }
@@ -89,6 +96,7 @@ function getOrder(user, cb){
 //calling
 login((user) =>{
       console.log(user);
+      // Nested shape is the real pain point this task wants you to notice.
    getUser(user, (userData)=>{
           console.log(userData);
           getOrder(user, (order) => {

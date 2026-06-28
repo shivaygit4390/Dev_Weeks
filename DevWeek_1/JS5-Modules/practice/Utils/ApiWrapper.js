@@ -1,10 +1,20 @@
+/*
+  Task objective:
+  - keep API request logic in one reusable module
+  - export a shared request helper instead of rewriting fetch logic everywhere
+
+  Revision purpose:
+  - reusable API wrapper moved into a module
+  - same async logic, now importable from other files
+*/
+
 async function apiRequest(url, options = {}, retries = 2, timeout = 5000){
 
 for(let i = 0; i <= retries; i++){
     //1.prepare the controller
     const controller = new AbortController();
     const signal = controller.signal;
-//2.make the timer and collect id to cancel if request is suscessfull
+//2. Create a timer id so it can be cleared if request succeeds.
     const timer = setTimeout(() => {
         controller.abort();
     }, timeout);
@@ -26,6 +36,7 @@ for(let i = 0; i <= retries; i++){
          return{
             ok : false,
             data : null,
+            // Keep output shape consistent for whichever file imports this utility.
             error : data.message || "req failed",
             status
          }
@@ -40,13 +51,12 @@ for(let i = 0; i <= retries; i++){
 
 
    }catch(err){
-    //err b agya to timeout hta do frzi kyu lgana
+    // Request failed, so clear timeout to avoid leaving extra timer work running.
     clearTimeout(timer);
-    //below block to make sure if timeout haooens then we shouldnt
-    //  retry as we made api wrapper to fail if timeout occurs and manual aort is there
-    const isTimeout = err.name === "AbortError";  //checks if we cancelled this req via timeout ie if err
-    //  type occured due to timeout then dont retry just return and off the code
+    // Timeout should not retry in this design.
+    const isTimeout = err.name === "AbortError";
     if(isTimeout){
+    // Timeout is treated as a final failure in this wrapper design.
     return {
         ok: false,
         data: null,
@@ -55,6 +65,7 @@ for(let i = 0; i <= retries; i++){
     }
 }
     if(i === retries){
+        // Retries exhausted: return one last standardized failure object.
         return { 
             ok : false,
             data : null,

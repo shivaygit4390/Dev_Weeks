@@ -43,6 +43,11 @@
 // Goal:
 // Use closure to keep token private and persistent
 
+/*
+  Revision purpose:
+  - private state using closure
+  - auth-style methods instead of direct variable access
+*/
 
 
 const tokenManager = () => {
@@ -51,10 +56,12 @@ const tokenManager = () => {
 
     return {
         getToken: function () {
+            // Read access is allowed only through a method.
             return token;
         },
 
         setToken: function (t) {
+            // Initial assignment happens only once in this version.
             if (token === null) {
                 token = t;
             } else {
@@ -67,6 +74,7 @@ const tokenManager = () => {
         },
 
         rotateToken: function (newToken) {
+            // Rotation updates the same private variable without exposing it directly.
             if (token !== null) {
                 token = newToken;
             } else {
@@ -86,4 +94,6 @@ console.log(auth.getToken());   // 12xv
 auth.rotateToken("45fxc");
 console.log(auth.getToken());   // 45fxc
 
+// No public `token` property exists.
+// The real value is still hidden inside closure memory.
 console.log(auth.token);        // undefined

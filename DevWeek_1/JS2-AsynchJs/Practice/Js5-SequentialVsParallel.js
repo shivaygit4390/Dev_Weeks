@@ -18,6 +18,12 @@
 // * See real difference
 
 
+/*
+  Revision purpose:
+  - compare sequential waiting vs parallel execution
+  - remember that Promise.all starts work together
+*/
+
 function api1(){
     return new Promise(( resolve, reject) =>{
         setTimeout(() =>{
@@ -49,6 +55,7 @@ function api3(){
 
 async function runSeq(){
     console.log("sequential")
+    // Each await blocks the next line until current promise finishes.
     await api1();
     await api2();
     await api3();
@@ -59,10 +66,12 @@ async function runSeq(){
 
  async function runParallel(){
     console.log("parallel started");
+  // All three calls begin together here.
   await  Promise.all([api1(), api2(), api3()])
   console.log("parallel ended");
  }
 runParallel();
 
-//here above seq one will take 1+2+3 seconds ie 6 seconds while 
-//parallel wull take only 3 secionds as 1 and 2 were executed parallely
+// Sequential flow takes about 1 + 2 + 3 = 6 seconds.
+// Parallel flow takes about 3 seconds because all requests start together,
+// and total time is dominated by the slowest one.

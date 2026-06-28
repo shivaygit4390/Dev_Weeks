@@ -38,13 +38,20 @@
 // execution until a set amount of time has passed since the last time it was called
 
 
+/*
+  Revision purpose:
+  - understand delayed execution after repeated calls stop
+  - remember that debounce cancels the previous pending timer
+*/
+
 const debounce = (fn, delay) =>{
      let opTimer = null; //will store the timer
     return function(...args){
+         // Every fresh call replaces the previous pending execution.
          if(opTimer != null) clearTimeout(opTimer);
           opTimer = setTimeout( () => {
             // fn(...args);   //do this if dont want to preserve the this context and you r using arrow function
-            //but do use apply if you want to preserve this and r usinf normal function
+            // Use apply when you want to preserve `this` for a normal function.
             fn.apply(this, args)
           } , delay);
     }

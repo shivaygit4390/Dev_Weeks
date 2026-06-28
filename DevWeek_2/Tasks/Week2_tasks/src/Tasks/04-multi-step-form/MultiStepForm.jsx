@@ -20,10 +20,12 @@ const MultiStepForm = () => {
   })
 
   const handleNext = () => {
+    // Step 4 is the review screen, so stop after that.
     if (step <= 3) setStep(step + 1)
   }
 
   const handlePrev = () => {
+    // Do not allow invalid step 0.
     if (step > 1) setStep(step - 1)
   }
 
@@ -43,6 +45,8 @@ const MultiStepForm = () => {
       <div>MultiStepForm</div>
       <div className="bg-green-800 text-cyan-50 p-5">{step}</div>
 
+      {/* Only one step renders at a time.
+          This is the core conditional-rendering idea of the task. */}
       {step === 1 ? (
         <Form
           first="Name"
@@ -92,6 +96,8 @@ const MultiStepForm = () => {
         <>
           <Form header="Review" prev={handlePrev} />
           <div>
+            {/* Review screen uses Object.keys so we do not rewrite each field manually.
+                That makes the final summary reflect the current formData object. */}
             {Object.keys(formData).map((key) => (
               <div key={key}>
                 {key}: {formData[key]}

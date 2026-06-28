@@ -31,6 +31,8 @@ const ThemeChanger = () => {
         ThemeChanger
       </div>
       <div className="p-1.5 bg-white flex justify-around">
+        {/* Mapping keeps the UI data-driven.
+            If you add one more color object, one more button appears automatically. */}
         {colorOptions.map((option) => (
           <Button
             key={option.name}

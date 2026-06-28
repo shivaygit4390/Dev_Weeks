@@ -26,6 +26,8 @@ const LoginFormView = ({ loginForm, setLoginForm }) => {
           name="name"
           value={loginForm.name}
           onChange={(e) => {
+            // Input updates parent-owned state.
+            // This is controlled input behavior, just passed down via props.
             setLoginForm((prev) => ({ ...prev, name: e.target.value }))
           }}
         />
@@ -63,6 +65,7 @@ const LoginToggle = () => {
   const [loginForm, setLoginForm] = useState({ name: '', pass: '' })
 
   const handleToggleAuth = () => {
+    // One boolean is enough to flip large portions of UI.
     setIsLoggedIn((prev) => !prev)
   }
 
@@ -77,6 +80,9 @@ const LoginToggle = () => {
       )}
 
       <div className="text-7xl bg-green-700 text-white">Dashboard</div>
+      {/* Wrapper pattern:
+          if auth is false, show fallback
+          if auth is true, render protected content */}
       <RequireAuth authenticated={isLoggedIn}>
         This is only viewed after the login success and auth is OK
       </RequireAuth>

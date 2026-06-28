@@ -1,3 +1,13 @@
+/*
+  Task objective:
+  - rewrite a promise chain using async/await
+  - handle async failures with try/catch
+
+  Revision purpose:
+  - rewrite the same async flow using async/await
+  - connect try/catch with promise error handling
+*/
+
 function login(){
     return new Promise((resolve, reject) =>{
    setTimeout(() =>{
@@ -24,10 +34,11 @@ function getOrders(user){
 }
 
 
-//call using asynch await
+// Call the same flow using async/await style
 
 async function userFlow(){
   try{
+      // await pauses inside this function until login promise resolves.
       let uid = await login();
     console.log(uid);
     let data = await getUser(uid);

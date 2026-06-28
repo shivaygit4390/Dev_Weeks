@@ -1,3 +1,13 @@
+/*
+  Task objective:
+  - make a shallow copy using spread
+  - observe that nested objects still share the same reference
+
+  Revision purpose:
+  - show that spread copy is only shallow
+  - remember that nested objects still share the same reference
+*/
+
 const obj1 = {
     name: "Nirmal",
     acad_details : {
@@ -9,6 +19,7 @@ const obj1 = {
 
 //shallow copying
 
+// Top-level fields get copied, but nested object reference stays shared.
 const obj2 = {...obj1};
 
 obj2.name = "Deep";

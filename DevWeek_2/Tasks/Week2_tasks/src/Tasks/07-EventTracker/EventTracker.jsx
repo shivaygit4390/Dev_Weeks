@@ -1,4 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
+
+/*
+  Task 07 - Event Tracker
+
+  Why this task exists:
+  - practice event handling
+  - track multiple pieces of related state
+  - see how one event can update many UI sections at once
+*/
 
 /*
   Reusable button component
@@ -78,6 +87,8 @@ const EventTracker = () => {
       </div>
 
       <div className="flex flex-row justify-center gap-2">
+        {/* All three UI blocks below depend on state.
+            One click re-renders click count, latest action, and history together. */}
         <p>
           <b>Total Clicks:</b> {clicks}
         </p>

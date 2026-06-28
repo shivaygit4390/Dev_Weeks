@@ -1,3 +1,13 @@
+/*
+  Task objective:
+  - convert callback-based async flow into promises
+  - chain async steps in a cleaner linear style using `.then()`
+
+  Revision purpose:
+  - convert nested callbacks into promise chaining
+  - remember that each `.then()` should return the next async step
+*/
+
 function login(){
     return new Promise((resolve, reject) =>{
    setTimeout(() =>{
@@ -26,6 +36,7 @@ function getOrders(user){
 
 login().then((user) =>{
     console.log(user);
+    // Return next promise so chain waits for user data.
     return getUser(user);
 }).then((userdata) => {
     console.log(userdata);

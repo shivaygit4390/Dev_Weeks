@@ -5,7 +5,8 @@ import MultiStepForm from './Tasks/04-multi-step-form/MultiStepForm'
 import LoginToggle from './Tasks/05-login-toggle/LoginToggle'
 import UserList from './Tasks/06-user-list/UserList'
 import EventTracker from './Tasks/07-EventTracker/EventTracker'
-
+import SignUp from './Tasks/08-SignUpForm/SignUp'
+import { Link, Route, Routes } from 'react-router-dom'
 function App() {
   // Keep sample data close to the task that consumes it.
   // This helps revision because you can instantly see:
@@ -39,9 +40,17 @@ function App() {
         <p className="mt-2 text-sm text-amber-100">
           Each completed task is grouped separately so revision stays easy.
         </p>
+        <div className='flex flex-row justify-center gap-2 bg-gray-700 text-2xl text-white' >
+          {/* <Link to = '/events'>Events </Link> */}
+           <Link to = '/users'>Userlist</Link>
+        </div>
       </header>
+{/* making routes for learning tasks */}
+<Routes>
+  <Route path='/users' element = {<UserList/>} ></Route>
+</Routes>
 
-      <section className="space-y-4">
+ <section className="space-y-4">
         <h2 className="text-2xl font-semibold">01. User Card</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {users.map((user) => (
@@ -92,6 +101,12 @@ function App() {
         <h2 className="text-2xl font-semibold">07. Event Tracker</h2>
        <EventTracker/>
       </section>
+
+        <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">08. Controlled Forms</h2>
+       <SignUp/>
+      </section>
+     
     </main>
   )
 }

@@ -44,6 +44,12 @@
 // Debounce → runs after user stops
 // Throttle → runs at fixed intervals
 
+/*
+  Revision purpose:
+  - allow only one execution per time window
+  - contrast this with debounce behavior
+*/
+
 const throttle = (fn, delay) => {
     //track if timer is finished or not
     let canRun = true;
@@ -51,6 +57,7 @@ const throttle = (fn, delay) => {
      if(canRun){
            canRun = false;
             fn.apply(this, args)
+           // Reopen execution only after the delay window ends.
            setTimeout(() =>{
             canRun = true;
         } ,delay)

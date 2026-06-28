@@ -17,6 +17,8 @@ Current completed tasks:
 4. `04-multi-step-form`
 5. `05-login-toggle`
 6. `06-user-list`
+7. `07-EventTracker`
+8. `08-SignUpForm`
 
 For every task folder, keep:
 

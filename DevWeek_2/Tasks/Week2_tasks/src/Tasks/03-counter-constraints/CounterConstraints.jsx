@@ -11,6 +11,8 @@ const CounterConstraints = () => {
   const [limitMessage, setLimitMessage] = useState('')
 
   const handleIncrease = () => {
+    // Guard first, update later.
+    // This is the exact "constraints on state" idea this task is teaching.
     if (count >= 10) {
       setLimitMessage('Limited: cannot go above 10')
       return
@@ -34,6 +36,9 @@ const CounterConstraints = () => {
     <>
       <h1>CounterConstraints</h1>
       <div>Counter: {count}</div>
+      {/* Feedback UI is also driven by state.
+          Empty message = nothing to show.
+          Non-empty message = render warning box. */}
       {!limitMessage ? null : (
         <div className="p-2 bg-red-700 text-white">{limitMessage}</div>
       )}

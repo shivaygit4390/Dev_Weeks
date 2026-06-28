@@ -2,6 +2,12 @@ import { useState } from "react";
 
 const UserList = () => {
   /*
+    Why this task exists:
+    - practice lists and keys
+    - practice add/remove/edit with immutable updates
+    - practice switching between add mode and edit mode
+  */
+  /*
     formData = temporary form state
 
     This only stores what user types in the input fields.
@@ -88,6 +94,11 @@ const UserList = () => {
       [Nirmal, Updated Rahul, Priya]
     */
     if (editingId !== null) {
+      /*
+        Edit flow:
+        same array shape
+        one matching object replaced with updated copy
+      */
       setUsers((prev) =>
         prev.map((user) => {
           if (user.id === editingId) {
@@ -186,6 +197,8 @@ const UserList = () => {
     <>
       <div>UserList</div>
 
+      {/* Rendering comes from state, not from hardcoded repeated JSX.
+          That is why add/remove/edit immediately reflect on screen. */}
       {users.map((user) => (
         <div key={user.id}>
           <div>{user.id}</div>
@@ -212,6 +225,8 @@ const UserList = () => {
 
       <div>{editingId !== null ? "EDIT User" : "ADD User"}</div>
 
+      {/* Same form is reused for both modes.
+          editingId decides whether submit means "add" or "update". */}
       <form onSubmit={handleSubmit}>
         Name:
         <input

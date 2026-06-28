@@ -1,3 +1,13 @@
+/*
+  Task objective:
+  - expose token operations through shared module functions
+  - understand module-scoped state as an alternative to closure factories
+
+  Revision purpose:
+  - compare closure-based private state with module-scoped shared state
+  - remember that one module instance can act like shared utility storage
+*/
+
 
 // const tokenManager = () => {
 //     // private var
@@ -32,10 +42,12 @@
 
 // export default tokenManager;
 
-//we wouldnt be using above thing as it will give seoerate instaces of token manager with each import like it wouldnt be sharing global state
+// Factory version above is useful when you want separate instances.
+// In this modules section, we are intentionally showing shared module-scoped state.
 
-// so  we su this 
+// So this file uses module scope instead:
 // tokenManager.js
+// token now lives at module scope, so imported functions share the same value.
 let token = null;
 
 function getToken() {

@@ -1,3 +1,9 @@
+/*
+  Revision purpose:
+  - closure-based caching
+  - preserving `this` when memoizing object methods
+*/
+
 // Problem Statement
 
 // Create a function called memoize that optimizes another function by caching its results.
@@ -20,6 +26,7 @@ const cache = {};
 
 return (...args) => {
        let key = JSON.stringify(args);
+       // Same arguments produce the same cache key, so old result can be reused.
        if(key in cache ) return cache[key];
     // else return  cache[key] = fn(...args); //confusing (storing as well as returning the result)
     else cache[key] = fn(...args); //store the result
@@ -49,6 +56,7 @@ const memoized2 = (fn) => {
     return function(...args){
         let key = JSON.stringify(args);
         if(key in cache) return cache[key];
+        // apply preserves current `this`, which matters for object methods.
         else cache[key] = fn.apply(this, args);
         return cache[key];
     }

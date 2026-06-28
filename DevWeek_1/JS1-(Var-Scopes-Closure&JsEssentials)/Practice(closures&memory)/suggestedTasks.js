@@ -41,4 +41,7 @@
 // bind
 
 
-//you did leading thrittle that calls bw the delays are ignored write a code efor trailing throttle like the calls bw delay arent ignored they run and persists
+// You already implemented leading throttle.
+// Next practice:
+// write trailing throttle where calls during the delay are not lost,
+// and the latest pending call runs after the delay window finishes.
