@@ -1,3 +1,8 @@
+import Compiledtasks from './components/shared/Compiled-tasks'
+
+import {  Route, Routes } from 'react-router-dom'
+import Navbar from './components/shared/Navbar'
+import Home from './components/shared/Home'
 import UserCard from './Tasks/01-user-card/UserCard'
 import ThemeChanger from './Tasks/02-theme-changer/ThemeChanger'
 import CounterConstraints from './Tasks/03-counter-constraints/CounterConstraints'
@@ -6,7 +11,6 @@ import LoginToggle from './Tasks/05-login-toggle/LoginToggle'
 import UserList from './Tasks/06-user-list/UserList'
 import EventTracker from './Tasks/07-EventTracker/EventTracker'
 import SignUp from './Tasks/08-SignUpForm/SignUp'
-import { Link, Route, Routes } from 'react-router-dom'
 function App() {
   // Keep sample data close to the task that consumes it.
   // This helps revision because you can instantly see:
@@ -35,28 +39,15 @@ function App() {
 
   return (
     <main className="space-y-10 p-6">
-      <header className="rounded-xl bg-amber-800 p-6 text-center text-white">
-        <h1 className="text-3xl font-bold">Week 2 React Revision Playground</h1>
-        <p className="mt-2 text-sm text-amber-100">
-          Each completed task is grouped separately so revision stays easy.
-        </p>
-        <div className='flex flex-row justify-center gap-2 bg-gray-700 text-2xl text-white' >
-          {/* <Link to = '/events'>Events </Link> */}
-           <Link to = '/users'>Userlist</Link>
-        </div>
-      </header>
-{/* making routes for learning tasks */}
-<Routes>
-  <Route path='/users' element = {<UserList/>} ></Route>
-</Routes>
-
- <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">01. User Card</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {users.map((user) => (
-            <UserCard key={user.id} {...user} />
-          ))}
-
+    <Navbar/>
+     <Routes>
+      <Route path='/' element = {<Home/>} />
+       <Route path='/usercard' element = {<div>
+        {
+          users.map((user) => (
+                 <UserCard key={user.id} {...user}  />
+          ))
+        }
           {/* One direct hardcoded usage is useful for revision:
               it reminds you that reusable components work with any valid props. */}
           <UserCard
@@ -68,45 +59,16 @@ function App() {
             isOnline={false}
             bio="This card is rendered directly to revise props passing."
           />
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">02. Theme Changer</h2>
-        <ThemeChanger />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">03. Counter Constraints</h2>
-        <CounterConstraints />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">04. Multi Step Form</h2>
-        <MultiStepForm />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">05. Login Toggle</h2>
-        <LoginToggle />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">06. User List</h2>
-        <UserList />
-      </section>
-
-      
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">07. Event Tracker</h2>
-       <EventTracker/>
-      </section>
-
-        <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">08. Controlled Forms</h2>
-       <SignUp/>
-      </section>
-     
+       </div>} ></Route>
+       <Route path='/themechanger' element = {<ThemeChanger/>} ></Route>
+       <Route path='/counter' element = {<CounterConstraints/>} ></Route>
+       <Route path='/multistep' element = {<MultiStepForm/>} ></Route>
+       <Route path='/login' element = {<LoginToggle/>} ></Route>
+       <Route path='/Userlist' element = {<UserList/>} ></Route>
+       <Route path='/events' element = {<EventTracker/>} ></Route>
+       <Route path='/signup' element = {<SignUp/>} ></Route>
+  <Route path='/compiled' element = {<Compiledtasks/>} ></Route>
+</Routes>
     </main>
   )
 }
