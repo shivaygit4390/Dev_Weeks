@@ -3,13 +3,20 @@
 This note covers Week 3 Part 2 from your roadmap:
 
 1. `useEffect` fetch-on-mount
-2. Production fetching upgrade with React Query
-3. Loading, error, and empty states
-4. Search, filters, and pagination
-5. Performance awareness
-6. State design maturity
-7. Clean architecture
-8. Mandatory User Management Module
+2. shared client state bridge
+3. Redux Toolkit basics
+4. production fetching upgrade with React Query
+5. loading, error, and empty states
+6. search, filters, and pagination
+7. performance awareness
+8. state design maturity
+9. clean architecture
+10. mandatory user-management module
+
+Important note:
+
+The original roadmap already has Week 3 as the first serious state-heavy React week.
+Because your resume/project already uses Redux, this note adds `Context API` and `Redux Toolkit` in the correct place before React Query so your learning path becomes interview-safe without breaking the roadmap flow.
 
 This note is made for your current level.
 
@@ -66,19 +73,114 @@ be able to hand-code the flow again
 
 ---
 
+## 2.5. What to Revise from Previous Weeks Before Coding Week 3
+
+This is the practical revision bridge.
+
+Do not start coding Week 3 blindly if these are weak.
+
+### Revise from Week 1
+
+#### A. Async JavaScript
+
+Revise from:
+
+- [Week 1 Checklist](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/WEEK1_REVISION_CHECKLIST.md)
+- [Async JS Theory](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS2-AsynchJs/AsynchJs.md)
+- [Async JS Practice README](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS2-AsynchJs/Practice/README.md)
+
+You need this for:
+
+- fetch-on-mount
+- `try/catch/finally`
+- error handling
+- promise understanding behind React Query
+
+#### B. Debounce
+
+Revise from:
+
+- [Debounce & Throttle Theory](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS3-Debounce&Throttle/Debounce&Throttle.md)
+- [Debounce Practice README](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS3-Debounce&Throttle/Practice/README.md)
+
+You need this for:
+
+- debounced search task
+
+### Revise from Week 2
+
+#### C. React mental model
+
+Revise from:
+
+- [Week 2 Part 1 - How React Thinks](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/week2-part1-how-react-thinks.md)
+
+You need this for:
+
+- rerender understanding
+- effect timing intuition
+- optimization and state design thinking
+
+#### D. Core React practice
+
+Revise from:
+
+- [Week 2 Part 2 - Core React Concepts and Tasks](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/week2-part2-core-react-concepts-and-tasks.md)
+
+Focus especially on:
+
+- `useState`
+- conditional rendering
+- lists and keys
+- controlled forms
+- folder structure basics
+
+You need this for:
+
+- loading/error/empty rendering
+- search/filter inputs
+- user list rendering
+- clean feature structure
+
+#### E. Router basics before URL-sync task
+
+Revise from:
+
+- [React Router Notes](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/React-Router-Notes.md)
+
+You need this for:
+
+- URL query params
+- search/filter/page sync
+
+### Fastest safe revision path
+
+If you are in a hurry, revise these 4 first:
+
+1. [Async JS Theory](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS2-AsynchJs/AsynchJs.md)
+2. [Debounce & Throttle Theory](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS3-Debounce&Throttle/Debounce&Throttle.md)
+3. [Week 2 Part 1 - How React Thinks](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/week2-part1-how-react-thinks.md)
+4. [Week 2 Part 2 - Core React Concepts and Tasks](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/week2-part2-core-react-concepts-and-tasks.md)
+
+If these are decent, you can start Week 3 safely.
+
+---
+
 ## 3. Part 2 Outcome
 
 By the end of Week 3 Part 2, you should be able to:
 
 - fetch data with `useEffect` cleanly
+- use Context for lighter shared client state
+- use Redux Toolkit for structured global client state
+- use React Query for server-state fetching and mutations
 - handle loading/error/empty states honestly
-- use React Query for list fetches and mutations
 - connect search, filters, and pagination correctly
 - avoid redundant derived state
 - add performance optimization only where justified
 - structure one realistic feature with cleaner architecture
 
-This is exactly the kind of frontend maturity that starts feeling closer to real job work.
+This is the kind of frontend maturity that starts feeling closer to real job work.
 
 ---
 
@@ -230,25 +332,277 @@ Priority: `Later / Advanced`
 
 ### Why it matters
 
-- prevents older requests from overwriting newer search results
+- protects against race conditions in rapid repeated requests
 
 For your current target, understanding this idea is enough if time is tight.
 
 ---
 
-## 5. Topic 2 - Production Fetching Upgrade with React Query
+## 5. Topic 2 - Shared Client State with Context API
 
 ### What you must understand first
 
-This section comes after manual fetching on purpose.
+Context solves prop drilling for shared app-level values.
 
-Manual fetching teaches:
+It does not mean:
 
-- request lifecycle
-- loading/error/empty thinking
-- cleanup awareness
+- replace every `useState`
+- replace Redux
+- replace React Query
 
-React Query then upgrades the real module.
+### Mandatory Task - Build One Clean Context Flow
+
+Priority: `Must Do`
+
+This task is not here for overkill.
+It is here because:
+
+- shared client state is part of real React work
+- Redux makes more sense if you first understand what Context solves
+- interviewers may ask this difference
+
+### Build goal
+
+Create one small but real shared-state flow using Context.
+
+Best beginner options:
+
+- `ThemeContext`
+- `AuthContext`
+- `AppSettingsContext`
+
+Recommended choice:
+
+`AuthContext` or `ThemeContext`
+
+### Suggested example
+
+Use `AuthContext` with:
+
+- `currentUser`
+- `role`
+- `logout`
+
+Then consume it in:
+
+- `Navbar`
+- `ProfileBadge`
+- `ProtectedInfo`
+
+### Example thinking
+
+```jsx
+const AuthContext = createContext(null)
+
+function AuthProvider({ children }) {
+  const [currentUser, setCurrentUser] = useState({
+    name: 'Nirmal',
+    role: 'admin',
+  })
+
+  function logout() {
+    setCurrentUser(null)
+  }
+
+  return (
+    <AuthContext.Provider value={{ currentUser, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+```
+
+### What this task is really testing
+
+You should be able to answer:
+
+- what prop drilling problem did Context solve?
+- why is Context enough here?
+- why do we not need Redux for this small example?
+
+### Mandatory requirements
+
+- `createContext` used properly
+- provider placed in correct parent position
+- at least 2 deep children consume shared value
+- prop drilling is actually reduced
+
+### Common mistakes to avoid
+
+- putting context inside child instead of above users of it
+- giving giant unrelated value objects without reason
+- using Context for fetched server lists
+
+### "Done" checklist
+
+- provider exists
+- deep child reads context with `useContext`
+- shared value updates are reflected in consumers
+- you can explain why Context was used
+
+### What you should be able to hand-code after doing it
+
+- `createContext`
+- provider wrapper
+- `useContext` read
+- one shared value flow
+
+### Good to Do - Split context and provider into separate file
+
+Priority: `Good to Do`
+
+This is good practice because many real apps keep context definitions separate.
+
+---
+
+## 6. Topic 3 - Global Client State with Redux Toolkit
+
+### What you must understand first
+
+Redux is not here to compete with React Query.
+
+In this roadmap flow:
+
+- Context = lighter shared client state
+- Redux Toolkit = structured global client state
+- React Query = server state
+
+### Mandatory Task - Build One Redux Toolkit Flow
+
+Priority: `Must Do`
+
+This task is important for you because your real project/resume already mentions Redux.
+
+### Build goal
+
+Set up Redux Toolkit and build one small but realistic global client-state flow.
+
+Best beginner-safe choices:
+
+- `uiSlice` for sidebar/theme/layout state
+- `authSlice` for current user/role shell
+- `filterSlice` for app-wide filters if intentionally shared
+
+Recommended choice:
+
+- `authSlice` or `uiSlice`
+
+### What you must set up
+
+- `configureStore`
+- root `<Provider>`
+- one slice using `createSlice`
+- `useSelector`
+- `useDispatch`
+
+### Example slice idea
+
+```jsx
+const initialState = {
+  sidebarOpen: false,
+  currentUser: {
+    name: 'Nirmal',
+    role: 'admin',
+  },
+}
+```
+
+### Example thinking
+
+```jsx
+const uiSlice = createSlice({
+  name: 'ui',
+  initialState: {
+    sidebarOpen: false,
+  },
+  reducers: {
+    toggleSidebar(state) {
+      state.sidebarOpen = !state.sidebarOpen
+    },
+  },
+})
+```
+
+Then in component:
+
+```jsx
+const dispatch = useDispatch()
+const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
+```
+
+### What this task is really testing
+
+You should be able to answer:
+
+- what is the store?
+- what is a slice?
+- what is dispatch?
+- what is selector?
+- why Redux here and not just local state?
+
+### Mandatory requirements
+
+- Redux Toolkit store setup works
+- provider wraps the app
+- one slice is created properly
+- state can be read with `useSelector`
+- state can be updated with `useDispatch`
+
+### Common mistakes to avoid
+
+- creating Redux state for tiny local input state
+- confusing action creator with reducer
+- trying to use Redux to replace every other tool
+- putting server-list fetching into Redux just because Redux exists
+
+### "Done" checklist
+
+- store exists
+- slice exists
+- dispatch updates state
+- selector reads state
+- component rerenders correctly
+
+### What you should be able to hand-code after doing it
+
+- `configureStore`
+- one `createSlice`
+- `Provider`
+- `useSelector`
+- `useDispatch`
+
+### Good to Do - `createAsyncThunk` working awareness
+
+Priority: `Good to Do`
+
+Because your company project may use async Redux flow, you should at least understand:
+
+- what `createAsyncThunk` does
+- pending / fulfilled / rejected idea
+
+But for this roadmap's main user-management data:
+
+- keep server lists in `React Query`
+- do not force async Redux everywhere
+
+---
+
+## 7. Topic 4 - Production Fetching Upgrade with React Query
+
+### What you must understand first
+
+This section comes after:
+
+- manual fetch
+- Context
+- Redux Toolkit
+
+Now the state map is clearer:
+
+- local state
+- shared client state
+- global client state
+- server state
 
 ### Mandatory Upgrade A - Use `useQuery` for the Users List
 
@@ -286,13 +640,13 @@ const usersQuery = useQuery({
 })
 ```
 
-### What the task is really checking
+### What this task is really checking
 
 You should be able to answer:
 
 - what is the `queryKey` doing?
-- why does changing search/page/filter belong in the key?
-- what is the difference between local state and server state?
+- why do search/page/filter belong in the key?
+- why is this better than using Redux for the fetched users list?
 
 ### "Done" checklist
 
@@ -340,7 +694,7 @@ const deleteUserMutation = useMutation({
 })
 ```
 
-### What the task is really checking
+### What this task is really checking
 
 You should be able to answer:
 
@@ -362,7 +716,7 @@ You should be able to answer:
 
 ---
 
-## 6. Topic 3 - Loading, Error, and Empty States
+## 8. Topic 5 - Loading, Error, and Empty States
 
 ### What you must understand first
 
@@ -447,7 +801,7 @@ Priority: `Good to Do`
 
 ---
 
-## 7. Topic 4 - Search, Filters, and Pagination
+## 9. Topic 6 - Search, Filters, and Pagination
 
 ### What you must understand first
 
@@ -609,7 +963,7 @@ Good if time allows, but not required for survival if prev/next is already solid
 
 ---
 
-## 8. Topic 5 - Performance Awareness
+## 10. Topic 7 - Performance Awareness
 
 ### What you must understand first
 
@@ -693,17 +1047,9 @@ Useful if:
 - props are stable enough
 - rerender skipping is meaningful
 
-### Important theory even if skipped
-
-You should still be able to explain:
-
-```txt
-React.memo is useful when a child is expensive and stable props make skipped rerenders valuable.
-```
-
 ---
 
-## 9. Topic 6 - State Design Maturity
+## 11. Topic 8 - State Design Maturity
 
 ### What you must understand first
 
@@ -763,7 +1109,7 @@ const filteredUsers = useMemo(() => {
 
 ---
 
-## 10. Topic 7 - Clean Architecture
+## 12. Topic 9 - Clean Architecture
 
 ### What you must understand first
 
@@ -777,7 +1123,7 @@ They are there to separate:
 - reusable hooks
 - pure helpers
 
-### Mandatory Task - Restructure App / Feature
+### Mandatory Task - Restructure Feature
 
 Priority: `Must Do`
 
@@ -804,6 +1150,10 @@ src/
     useUsersQuery.js
   services/
     userService.js
+  store/
+    store.js
+    authSlice.js
+    uiSlice.js
   utils/
     queryHelpers.js
 ```
@@ -814,6 +1164,7 @@ src/
 - `components` -> render reusable UI
 - `hooks` -> reuse logic
 - `services` -> talk to API
+- `store` -> Redux Toolkit setup and slices
 - `utils` -> pure helpers
 
 ### What the task is really testing
@@ -825,6 +1176,7 @@ src/
 ### "Done" checklist
 
 - API logic is not sprayed inside JSX everywhere
+- Redux setup is not mixed randomly into components
 - page is cleaner than a giant single file
 - shared UI pieces are separated
 
@@ -833,14 +1185,11 @@ src/
 - one service function
 - one page component
 - one reusable hook/helper
-
-### Important note for your goal
-
-For `5-6 LPA` readiness, reasonable clarity matters much more than enterprise-level folder obsession.
+- one basic store + slice setup
 
 ---
 
-## 11. Mandatory Module - User Management Module
+## 13. Topic 10 - Mandatory Module: User Management Module
 
 Priority: `Must Do`
 
@@ -863,6 +1212,7 @@ You should be able to prove:
 - I can mutate data and refresh the list correctly
 - I can manage search, filter, and page together
 - I can structure one feature properly
+- I can separate local state, shared client state, and server state correctly
 
 ### Simple screen blueprint
 
@@ -892,6 +1242,28 @@ Optional:
 - create and delete, or edit and delete
 - React Query list fetch
 - query invalidation after mutation
+- one light shared-state example using Context or Redux where genuinely relevant
+
+### Best role separation inside this module
+
+Use this exact thinking:
+
+- local state:
+  - form input drafts
+  - modal open/close
+  - current local page number if not URL-driven yet
+
+- Context:
+  - lighter app-level shell like theme or current-user shell if needed
+
+- Redux Toolkit:
+  - structured global client state if the module/app truly needs it
+  - examples: auth shell, global layout, shared UI state
+
+- React Query:
+  - users list
+  - user CRUD server calls
+  - cached server responses
 
 ### Example flow
 
@@ -904,29 +1276,14 @@ Optional:
 7. user creates/edits/deletes
 8. list refreshes correctly
 
-### React Query and state rules for this module
-
-Keep these rules fixed:
-
-- use `useQuery` for list fetch
-- use `useMutation` for create/update/delete
-- invalidate users query after successful mutation
-- put page/search/filter values into query key if they affect fetch
-- reset page to `1` when search/filter changes
-
-Example query key:
-
-```txt
-['users', page, debouncedSearch, selectedRole]
-```
-
 ### What "done" means
 
-- module feels like one feature, not scattered small demos
+- module feels like one feature, not scattered demos
 - list fetch works through React Query
 - mutation updates are reflected back correctly
 - loading/error/empty are handled honestly
 - search/filter/page work together
+- state responsibilities are clean
 - folder structure is readable
 
 ### What you should be able to hand-code after doing it
@@ -936,7 +1293,8 @@ Example query key:
 - one invalidation call
 - one debounced search flow
 - one pagination flow
-- one derived-state cleanup example
+- one context example
+- one Redux Toolkit example
 
 ### What can stay simple
 
@@ -952,6 +1310,7 @@ Example query key:
 - query invalidation understanding
 - page reset rules
 - separation of service and UI logic
+- state-tool distinction
 
 ### Best build phases
 
@@ -960,13 +1319,15 @@ If this module feels too big, build in this order:
 1. create users page skeleton
 2. manual fetch with `useEffect`
 3. loading/error/empty states
-4. move API calls to `services`
-5. upgrade list fetch to React Query
-6. add one mutation and invalidation
-7. add search and one filter
-8. add pagination
-9. remove redundant derived state
-10. add one justified optimization if needed
+4. small Context example
+5. small Redux Toolkit example
+6. move API calls to `services`
+7. upgrade list fetch to React Query
+8. add one mutation and invalidation
+9. add search and one filter
+10. add pagination
+11. remove redundant derived state
+12. add one justified optimization if needed
 
 ### Minimum acceptable version vs better version
 
@@ -974,6 +1335,8 @@ Minimum acceptable version for your current goal:
 
 - list fetch works
 - loading/error/empty exists
+- one small Context example
+- one solid Redux Toolkit example
 - one mutation works
 - search works
 - one filter works
@@ -997,48 +1360,57 @@ Advanced version that can wait:
 
 ---
 
-## 12. Recommended Order to Build Week 3
+## 14. Recommended Order to Build Week 3
 
 Build in this order:
 
 1. manual fetch with `useEffect`
-2. robust loading/error/empty UI
-3. move request logic into `services`
-4. upgrade list fetch to React Query
-5. add one mutation and invalidate list query
-6. add search
-7. add one filter
-8. add pagination
-9. add URL sync if time allows
-10. remove redundant derived state
-11. add one justified optimization
-12. clean folder structure
+2. small Context API flow
+3. one Redux Toolkit flow
+4. upgrade real list fetch to React Query
+5. robust loading/error/empty UI
+6. add one mutation and invalidate list query
+7. add search
+8. add one filter
+9. add pagination
+10. add URL sync if time allows
+11. remove redundant derived state
+12. add one justified optimization
+13. clean folder structure
 
-This order works because each step supports the next one.
+This order works because it moves from:
+
+```txt
+local -> shared client -> global client -> server state
+```
+
+which keeps the learning clearer.
 
 ---
 
-## 13. How to Think About Each Week 3 Task Properly
+## 15. How to Think About Each Week 3 Task Properly
 
 These tasks are not random.
 Each one is testing a real frontend skill:
 
 - fetch-on-mount -> correct `useEffect` usage
+- Context task -> shared client-state basics
+- Redux task -> structured global client state
 - React Query upgrade -> server-state maturity
-- loading/error/empty -> honest async UI
+- robust API UI -> honest async rendering
 - debounced search -> efficient input-driven list logic
 - filters -> real-world list narrowing
 - pagination -> managing large lists
-- optimization -> maturity, not hook-collection
+- optimization -> maturity, not hook collection
 - derived-state cleanup -> cleaner state design
 - architecture cleanup -> feature organization
-- user management module -> ability to combine all of the above
+- user-management module -> ability to combine all of the above
 
 If you see this pattern, Week 3 becomes much more understandable.
 
 ---
 
-## 14. What to Study Before Coding Each Task
+## 16. What to Study Before Coding Each Task
 
 ### Before fetch-on-mount
 
@@ -1048,6 +1420,26 @@ Study:
 - dependency arrays
 - `try/catch/finally`
 - conditional rendering
+
+### Before Context task
+
+Study:
+
+- prop drilling
+- `createContext`
+- `useContext`
+- provider pattern
+
+### Before Redux task
+
+Study:
+
+- store
+- slice
+- reducer
+- action
+- selector
+- dispatch
 
 ### Before React Query upgrade
 
@@ -1073,22 +1465,26 @@ Study:
 
 - derived state
 - rerender reasons
-- `useMemo` and `useCallback` only as optimization tools
-
-### Before clean architecture task
-
-Study:
-
-- role of `pages`, `components`, `hooks`, `services`, `utils`
+- `useMemo` and `useCallback` as optimization tools
 
 ---
 
-## 15. Common Beginner Confusions Cleared
+## 17. Common Beginner Confusions Cleared
 
-### "Do I still need to learn manual fetch if I will use React Query?"
+### "If I know Redux, do I still need React Query?"
 
 Yes.
-Because manual fetch teaches the underlying async UI lifecycle.
+Redux and React Query solve different problems.
+
+### "If I know Context, do I still need Redux?"
+
+Sometimes yes.
+Context is good for lighter shared state, Redux is better for more structured global state.
+
+### "Should I use Redux for users list fetch?"
+
+For this roadmap, no.
+Use React Query for the fetched users list.
 
 ### "Do I need backend of my own for this week?"
 
@@ -1100,24 +1496,16 @@ An existing API or mock API is enough for learning the frontend logic.
 No.
 Correct logic matters much more than visual polish.
 
-### "Do I need all advanced React Query features?"
-
-No.
-Basic `useQuery`, `useMutation`, and invalidation are the real high-value parts.
-
-### "Do I need to optimize everything?"
-
-No.
-You need to understand where optimization is justified.
-
 ---
 
-## 16. Strong Minimum Scope for You
+## 18. Strong Minimum Scope for You
 
 If time gets tight, do at least this:
 
 - one fetch-on-mount screen
 - one proper loading/error/empty flow
+- one Context example
+- one Redux Toolkit example
 - one React Query list fetch
 - one mutation + invalidation
 - one search input
@@ -1136,23 +1524,24 @@ If time becomes very tight, the first block is your minimum safe Week 3 core.
 
 ---
 
-## 17. Hand-Coding Recovery Checklist
+## 19. Hand-Coding Recovery Checklist
 
 After Week 3, you should be able to rewrite these from memory:
 
 1. fetch-on-mount with `useEffect`
-2. loading/error/empty conditional branches
-3. one `useQuery` list fetch
-4. one `useMutation` with invalidation
-5. debounced search input flow
-6. basic pagination logic
-7. one derived-state refactor example
+2. one Context provider + consumer flow
+3. one Redux Toolkit store + slice + selector + dispatch flow
+4. one `useQuery` list fetch
+5. one `useMutation` with invalidation
+6. debounced search input flow
+7. basic pagination logic
+8. one derived-state refactor example
 
 If you can hand-code these again, Week 3 has actually gone into your hands and head.
 
 ---
 
-## 18. Week 3 Priority Filter for `5-6 LPA`
+## 20. Week 3 Priority Filter for `5-6 LPA`
 
 ### A. Must Not Skip
 
@@ -1164,7 +1553,25 @@ Must do:
 - loading/error/empty distinction
 - no effect misuse
 
-#### 2. React Query basics
+#### 2. Context basics
+
+Must do:
+
+- prop drilling understanding
+- one provider
+- one consumer flow
+
+#### 3. Redux Toolkit basics
+
+Must do:
+
+- `configureStore`
+- `createSlice`
+- `useSelector`
+- `useDispatch`
+- one realistic slice
+
+#### 4. React Query basics
 
 Must do:
 
@@ -1172,7 +1579,7 @@ Must do:
 - `useMutation` for one CRUD action
 - `invalidateQueries` after success
 
-#### 3. Search + filter + pagination basics
+#### 5. Search + filter + pagination basics
 
 Must do:
 
@@ -1181,20 +1588,15 @@ Must do:
 - pagination
 - page reset logic
 
-#### 4. Clean feature organization
+#### 6. Clean feature organization
 
 Must do:
 
 - `pages`
 - `components`
 - `services`
-- optionally simple `hooks`/`utils`
-
-#### 5. Mandatory user management module
-
-Must do:
-
-- realistic combined feature
+- basic `store`
+- simple `hooks`/`utils`
 
 ---
 
@@ -1206,24 +1608,24 @@ Good to do:
 
 - build once or at least understand clearly
 
-#### 2. URL query sync
+#### 2. `createAsyncThunk` awareness
+
+Good to do:
+
+- especially because of resume/company project alignment
+
+#### 3. URL query sync
 
 Good to do:
 
 - especially once, because it feels production-like
 
-#### 3. One justified optimization
+#### 4. One justified optimization
 
 Good to do:
 
 - `useMemo`
 - `useCallback`
-
-#### 4. Derived-state cleanup
-
-Good to do:
-
-- one refactor is enough
 
 ---
 
@@ -1256,13 +1658,15 @@ Safe to postpone.
 If your time is tight, keep this core:
 
 1. fetch-on-mount with correct async states
-2. `useQuery` list fetch
-3. one mutation + invalidation
-4. one search input + one filter
-5. pagination basics
-6. one clean user-management feature structure
+2. one Context flow
+3. one Redux Toolkit flow
+4. one `useQuery` list fetch
+5. one mutation + invalidation
+6. one search input + one filter
+7. pagination basics
+8. one clean user-management feature structure
 
-If these are strong, Week 3 is still valuable even if some polish is left.
+If these are strong, Week 3 is genuinely valuable even if some polish is left.
 
 ---
 
@@ -1271,9 +1675,9 @@ If these are strong, Week 3 is still valuable even if some polish is left.
 Use this rule:
 
 ```txt
-Do all core async-data tasks.
-Do the high-value React Query and list-logic parts.
-Keep advanced optimization and heavy polish for later if needed.
+Do all core state-management and async-data tasks.
+Keep each tool in its correct role.
+Skip heavy polish and advanced extras if they slow progress.
 ```
 
 That is the right Week 3 balance for your current target.

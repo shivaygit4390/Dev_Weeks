@@ -4,6 +4,8 @@ This note covers the exact Week 3 roadmap jump:
 
 - `useEffect`
 - API fetching and cleanup
+- shared client state
+- Redux Toolkit
 - React Query
 - loading, error, success, and empty states
 - search, filters, and pagination
@@ -20,15 +22,133 @@ local state -> UI
 Week 3 becomes:
 
 ```txt
-server data + async states + user actions -> production-style UI
+shared state + server data + async states + user actions -> production-style UI
 ```
 
 Goal of this note:
 
 - make Week 3 understandable before you start coding
 - explain the concepts in revision-friendly language
-- give enough examples that you do not need to search outside for the basics
+- add the missing state-management bridge needed for resume and interview safety
+- give enough examples that you should not need to search outside for the basics
 - prepare you for `5-6 LPA` interview explanations
+
+---
+
+## 0. What to Revise Before Starting Week 3
+
+Week 3 does not start from zero.
+If the old base is shaky, then:
+
+- `useEffect` will feel confusing
+- Context/Redux distinctions will feel random
+- React Query will feel like magic instead of making sense
+
+So before starting Week 3 properly, revise these:
+
+### From Week 1
+
+#### 1. Async JavaScript
+
+Revise:
+
+- callbacks
+- promises
+- `async/await`
+- error handling
+- sequential vs parallel thinking
+
+Read:
+
+- [Week 1 Checklist](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/WEEK1_REVISION_CHECKLIST.md)
+- [Async JS Theory](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS2-AsynchJs/AsynchJs.md)
+- [Async JS Practice README](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS2-AsynchJs/Practice/README.md)
+
+Why it matters for Week 3:
+
+- fetching is async
+- loading/error flow is async
+- React Query mental model becomes easier if promises already make sense
+
+#### 2. Debounce
+
+Revise:
+
+- what debounce does
+- why it prevents expensive work on every keystroke
+
+Read:
+
+- [Debounce & Throttle Theory](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS3-Debounce&Throttle/Debounce&Throttle.md)
+- [Debounce Practice README](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS3-Debounce&Throttle/Practice/README.md)
+
+Why it matters for Week 3:
+
+- debounced search is one of the direct roadmap tasks
+
+### From Week 2
+
+#### 3. React mental model
+
+Revise:
+
+- `UI = f(state)`
+- state change -> rerender
+- rerender vs DOM update
+- why keys matter
+
+Read:
+
+- [Week 2 Part 1 - How React Thinks](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/week2-part1-how-react-thinks.md)
+
+Why it matters for Week 3:
+
+- effects make more sense when render vs rerender is already clear
+- optimization and state design also depend on this base
+
+#### 4. Core React coding base
+
+Revise:
+
+- `useState`
+- conditional rendering
+- list rendering with keys
+- controlled forms
+- React dev hygiene
+
+Read:
+
+- [Week 2 Part 2 - Core React Concepts and Tasks](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/week2-part2-core-react-concepts-and-tasks.md)
+
+Why it matters for Week 3:
+
+- search/filter inputs depend on controlled forms
+- loading/error/empty depends on conditional rendering
+- users list depends on lists and keys
+- architecture and shared state need the Week 2 React base
+
+#### 5. Router basics for URL sync
+
+This is not required before the entire week, but revise it before the URL-sync part.
+
+Read:
+
+- [React Router Notes](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/React-Router-Notes.md)
+
+Why it matters for Week 3:
+
+- URL query params are part of the Week 3 add-on flow
+
+### Minimum revision if you are in a hurry
+
+If you do not have time to reread everything, at least revise these before serious Week 3 work:
+
+1. [Async JS Theory](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS2-AsynchJs/AsynchJs.md)
+2. [Debounce & Throttle Theory](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_1/JS3-Debounce&Throttle/Debounce&Throttle.md)
+3. [Week 2 Part 1 - How React Thinks](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/week2-part1-how-react-thinks.md)
+4. [Week 2 Part 2 - Core React Concepts and Tasks](C:/Others/Drive_Next/Dev-DSA/Dev_Weeks/DevWeek_2/notes/week2-part2-core-react-concepts-and-tasks.md)
+
+That is the smallest safe revision base.
 
 ---
 
@@ -40,10 +160,8 @@ It is mainly about this shift:
 
 ```txt
 In Week 2 you mostly controlled the data.
-In Week 3 the server controls important data.
+In Week 3 some important data and flows are no longer simple local component state.
 ```
-
-That changes everything.
 
 Now you must think about:
 
@@ -51,6 +169,7 @@ Now you must think about:
 - data arrived or not?
 - request failed or not?
 - request succeeded but returned nothing?
+- should this value live locally, in shared client state, or come from the server?
 - user changed search/filter/page?
 - cached data is stale or still okay?
 
@@ -63,47 +182,81 @@ how to build UI with React
 Week 3 teaches:
 
 ```txt
-how to build realistic UI that depends on APIs and changing async state
+how to build realistic UI that depends on shared state, API state, and async behavior
 ```
 
 ---
 
-## 2. The Most Important New Mental Model
+## 2. The State Map You Must Keep Clear
 
-React UI now has two broad kinds of state:
+Before Redux and React Query, keep this one map in your head.
 
-### Client state
+### A. Local or component state
 
-This is UI-owned state.
-
-Examples:
-
-- search input text
-- selected filter
-- current page number
-- modal open/close
-- active tab
-
-### Server state
-
-This is data that comes from backend or API.
+This belongs to one component or one small isolated UI area.
 
 Examples:
 
-- users list
-- user profile
+- current input value
+- whether a modal is open
+- current tab
+- current counter value
+
+Good tools:
+
+- `useState`
+- sometimes `useReducer`
+
+### B. Shared client state
+
+This is still frontend-owned state, but many components need it.
+
+Examples:
+
+- logged-in user info already known in frontend
+- app theme
+- sidebar open/closed
+- selected workspace
+- global filters
+- current auth role used across screens
+
+Good tools:
+
+- `Context API` for light-to-medium shared state
+- `Redux Toolkit` for more structured app-wide state
+
+### C. Server state
+
+This is data coming from backend or API.
+
+Examples:
+
+- users list from backend
 - products list
-- dashboard stats
+- payment history
+- plans/subscriptions from server
 
-Why server state is different:
+This data is different because:
 
 - you do not own the original source
-- it can become outdated
+- it can become stale
 - it may need refetching
-- multiple screens may need the same data
-- other people or systems may change it
+- multiple screens may depend on it
+- server changes can make frontend copies outdated
 
-This is exactly why Week 3 introduces React Query.
+Best tool in this roadmap:
+
+- `React Query`
+
+### The one-line memory rule
+
+```txt
+local state = one component owns it
+shared client state = frontend owns it but many components need it
+server state = backend owns it, frontend only reads/mutates it
+```
+
+If this distinction is clear, half of Week 3 confusion disappears.
 
 ---
 
@@ -121,7 +274,7 @@ Examples:
 - localStorage write
 - manually controlling browser APIs
 
-Short memory line:
+Memory line:
 
 ```txt
 render should describe UI
@@ -137,7 +290,19 @@ Examples:
 - `clearTimeout`
 - `removeEventListener`
 - `abort()`
-- disconnecting a socket or subscription
+- disconnecting subscriptions
+
+### Prop drilling
+
+Passing props through many intermediate components only because a deep child needs them.
+
+Example:
+
+```txt
+App -> Layout -> Header -> Nav -> UserBadge
+```
+
+If only `UserBadge` needs `currentUser`, but all layers receive it as props, that is prop drilling.
 
 ### Race condition
 
@@ -156,9 +321,7 @@ Example:
 
 Data that can be calculated from existing state instead of stored separately.
 
-Example:
-
-Bad:
+Bad example:
 
 ```jsx
 const [users, setUsers] = useState([])
@@ -195,14 +358,14 @@ If this key changes, React Query treats it as different query state.
 Telling React Query:
 
 ```txt
-this data may now be outdated, mark it stale and refetch it if needed
+this cached data may now be outdated, please mark it stale and refetch when needed
 ```
 
 ---
 
 ## 4. `useEffect` - The Correct Mental Model
 
-The official React docs describe `useEffect` as a hook that lets you synchronize a component with an external system. That is the most important sentence to remember. Inference from the docs: if there is no external system involved, there is a strong chance you do not need an effect at all. Sources: [React useEffect](https://react.dev/reference/react/useEffect)
+The React docs describe `useEffect` as a hook that lets you synchronize a component with an external system. That is the most important sentence to remember. Inference from the docs: if there is no external system involved, there is a strong chance you do not need an effect at all. Source: [React useEffect](https://react.dev/reference/react/useEffect)
 
 ### Wrong mental model
 
@@ -247,8 +410,6 @@ useEffect runs after render and is used to synchronize the component with extern
 
 ## 5. How the Effect Lifecycle Actually Works
 
-This is where many people stay confused.
-
 Suppose you write:
 
 ```jsx
@@ -271,7 +432,7 @@ React behavior is:
 
 ### Think of every effect as a tiny process
 
-The React docs strongly push this idea: write each effect like one independent setup/cleanup cycle. That is a very strong way to think. Source: [React useEffect](https://react.dev/reference/react/useEffect)
+The React docs push this idea strongly: write each effect like one independent setup/cleanup cycle. That is a very strong way to think. Source: [React useEffect](https://react.dev/reference/react/useEffect)
 
 Memory line:
 
@@ -293,8 +454,6 @@ then your cleanup should stop or undo it.
 
 ## 6. Why Effects Sometimes Run Twice in Development
 
-This confuses almost everyone once.
-
 In development with Strict Mode, React intentionally does an extra setup + cleanup cycle before the real setup. This is a stress test for your cleanup logic. If your effect breaks because of this, the problem is usually not "React is wrong"; the problem is usually that cleanup logic is incomplete. Source: [React useEffect](https://react.dev/reference/react/useEffect)
 
 ### Practical meaning
@@ -305,13 +464,13 @@ If you see:
 - connection opening and closing once extra
 - logs appearing twice
 
-it may be because Strict Mode is checking whether your effect is resilient.
+it may be because Strict Mode is checking whether your cleanup is truly safe.
 
 Do not panic immediately.
 First ask:
 
 ```txt
-is my cleanup truly mirroring my setup?
+is my cleanup really mirroring my setup?
 ```
 
 ---
@@ -328,7 +487,7 @@ useEffect(() => {
 
 This runs after every commit.
 
-Usually dangerous unless that is really what you want.
+Usually risky unless that is truly what you want.
 
 ### Empty dependency array
 
@@ -362,7 +521,7 @@ run after mount and again when searchTerm changes
 
 ### The real rule
 
-The React docs describe dependencies as all reactive values referenced in setup code: props, state, and variables/functions declared inside the component. Source: [React useEffect](https://react.dev/reference/react/useEffect)
+Dependencies should represent all reactive values the effect reads from component scope: props, state, and functions/variables declared in the component. Source: [React useEffect](https://react.dev/reference/react/useEffect)
 
 So the right question is not:
 
@@ -373,7 +532,7 @@ How do I silence dependency warnings?
 The right question is:
 
 ```txt
-What values is this effect truly reading from component scope?
+What values is this effect truly reading?
 ```
 
 ### Example
@@ -392,8 +551,6 @@ Why both dependencies belong:
 
 - `role` affects the request
 - `page` affects the request
-
-If either changes, the effect should reflect the new situation.
 
 ---
 
@@ -442,9 +599,9 @@ Ask:
 - am I storing something that can be derived?
 - am I using a function/object dependency that changes every render?
 
-### Very important React doc idea
+### Very important React-doc idea
 
-If you are not synchronizing with an external system, you probably do not need an effect. That sentence alone prevents many bad loops. Source: [React useEffect](https://react.dev/reference/react/useEffect)
+If you are not synchronizing with an external system, you probably do not need an effect. Source: [React useEffect](https://react.dev/reference/react/useEffect)
 
 ---
 
@@ -459,6 +616,7 @@ Because if you do not understand:
 - loading
 - error
 - success
+- empty
 - cleanup
 
 then React Query becomes magic instead of understanding.
@@ -516,7 +674,7 @@ function UsersPage() {
 - async function is inside effect, not the effect callback itself
 - loading is set before request
 - error is cleared before new request
-- non-OK HTTP response is handled
+- non-OK response is handled
 - `finally` guarantees loading cleanup
 - render branches are honest
 
@@ -587,76 +745,441 @@ if the effect starts a request, cleanup should know how to stop it
 
 ---
 
-## 11. Loading, Error, Success, Empty - Treat It Like a State Machine
+## 11. Why Shared Client State Enters the Picture Now
 
-Most bad API UIs only think in two states:
-
-- data
-- no data
-
-That is not enough.
-
-### Better model
+Now that you have seen local state and server fetch flow, the next natural question is:
 
 ```txt
-idle
-loading
-error
-success-with-data
-success-but-empty
+What if many components need the same frontend-owned state?
 ```
 
-### Why loading is not empty
-
-These are totally different:
-
-- loading = request still running
-- empty = request finished correctly but returned zero usable items
-
-### Wrong UI behavior
-
-Showing:
+Example:
 
 ```txt
-No users found
+App -> Layout -> Header -> ProfileMenu -> UserBadge
 ```
 
-before the request even finishes.
+If:
 
-### Example branching order
+- `Header` needs user role
+- `ProfileMenu` needs user name
+- `UserBadge` needs avatar
 
-```jsx
-if (loading) {
-  return <p>Loading users...</p>
-}
+and you pass those values manually through every layer, you get prop drilling.
 
-if (error) {
-  return <p>{error}</p>
-}
+This is where `Context` and `Redux` become relevant.
 
-if (users.length === 0) {
-  return <p>No users found.</p>
-}
+### Memory line
 
-return <UserList users={users} />
+```txt
+Context and Redux are not for replacing every useState.
+They are for shared client state.
 ```
-
-### Better real-world version
-
-You might later keep:
-
-- full-page loading on first fetch
-- smaller inline loader on refetch
-- retry button on error
-- friendly empty-state message
-
-But the logic order stays the same.
 
 ---
 
-## 12. React Query - Why It Exists
+## 12. Context API - The First Shared-State Step
 
-The TanStack docs describe TanStack Query as a library that makes fetching, caching, synchronizing, and updating server state easier. That wording is very useful because it tells you the real problem it solves: server state, not just "fetching". Source: [TanStack Query Overview](https://tanstack.com/query/latest/docs/framework/react/overview)
+The React docs describe context like this: it lets components pass information deep down without explicitly passing props. That is the best first definition to remember. Sources: [React createContext](https://react.dev/reference/react/createContext), [React useContext](https://react.dev/reference/react/useContext)
+
+### When Context is useful
+
+Context is good when:
+
+- many components need the same value
+- the value is relatively stable or app-level
+- you want to avoid prop drilling
+- you do not need heavy Redux-style structure
+
+Examples:
+
+- theme
+- current logged-in user
+- auth methods like `logout`
+- language
+- feature flags
+
+### The basic mental model
+
+```txt
+create context
+provide value high in tree
+read value deep in tree with useContext
+```
+
+### Example
+
+```jsx
+import { createContext, useContext, useState } from 'react'
+
+const AuthContext = createContext(null)
+
+function AuthProvider({ children }) {
+  const [currentUser, setCurrentUser] = useState({
+    name: 'Nirmal',
+    role: 'admin',
+  })
+
+  function logout() {
+    setCurrentUser(null)
+  }
+
+  return (
+    <AuthContext.Provider value={{ currentUser, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+function UserBadge() {
+  const { currentUser } = useContext(AuthContext)
+
+  return <p>{currentUser ? currentUser.name : 'Guest'}</p>
+}
+```
+
+### What happens when context value changes
+
+React will re-render the components reading that context value. This is why Context is useful, but also why it should not be treated like "free global everything". Source: [React createContext](https://react.dev/reference/react/createContext)
+
+### Important caveat
+
+Context solves:
+
+- prop drilling
+
+It does not automatically solve:
+
+- large-scale state organization
+- complex debugging
+- action flow discipline
+- large app predictability
+
+That is where Redux becomes more useful.
+
+---
+
+## 13. Context API - What It Does Not Mean
+
+Context is not:
+
+- a replacement for all local state
+- a replacement for server-state tools
+- automatically better than Redux in all cases
+
+### Bad Context usage pattern
+
+Putting a huge constantly-changing app state object into one giant context and making everything depend on it.
+
+This usually becomes:
+
+- noisy
+- harder to debug
+- less structured
+
+### Better use of Context
+
+Use it for lighter shared values like:
+
+- theme
+- current user shell
+- auth helper methods
+- app settings
+
+### Interview answer
+
+```txt
+I use Context to avoid prop drilling for shared app-level values like theme or current user information. For more complex global state with multiple slices and predictable action flows, Redux Toolkit is usually a better fit.
+```
+
+---
+
+## 14. Redux Toolkit - Why It Comes After Context
+
+Redux Toolkit is the modern recommended way to write Redux. The official Quick Start shows `configureStore`, `createSlice`, and React-Redux hooks as the normal modern path. Sources: [Redux Toolkit Quick Start](https://redux-toolkit.js.org/tutorials/quick-start), [React Redux Hooks](https://react-redux.js.org/api/hooks)
+
+### Why Redux exists at all
+
+Redux is useful when:
+
+- state is truly app-wide
+- many unrelated components need to read/update it
+- updates should be predictable and explicit
+- you want clearer structure around actions and reducers
+- your project is large enough that local state and Context start feeling messy
+
+### Good examples
+
+- auth/session shell
+- sidebar / app layout state
+- selected workspace or branch
+- notification center
+- complex wizard shared across screens
+- large shared filters and UI preferences
+
+### Memory line
+
+```txt
+Redux gives structure to global client state.
+```
+
+Context says:
+
+```txt
+here is shared data
+```
+
+Redux says:
+
+```txt
+here is global state
+here is how it changes
+here is how components read and update it
+```
+
+---
+
+## 15. Redux Toolkit Core Mental Model
+
+The pieces you must clearly understand:
+
+### Store
+
+The single app-wide container holding Redux state.
+
+Think:
+
+```txt
+central box of global client state
+```
+
+### Slice
+
+A named part of the Redux state with:
+
+- initial state
+- reducers
+- generated actions
+
+Think:
+
+```txt
+one domain of global state
+```
+
+Examples:
+
+- `authSlice`
+- `uiSlice`
+- `membershipSlice`
+
+### Reducer
+
+A function describing how state changes when an action happens.
+
+### Action
+
+An event that says:
+
+```txt
+something happened
+```
+
+Examples:
+
+- `loginSuccess`
+- `toggleSidebar`
+- `setActivePlan`
+
+### Selector
+
+A function or pattern used to read specific state from the store.
+
+Examples:
+
+- current user
+- current theme
+- active role
+
+### Dispatch
+
+How components send actions to Redux.
+
+---
+
+## 16. The Basic Redux Toolkit Flow
+
+This is the flow you should memorize:
+
+```txt
+component dispatches action
+reducer updates slice state
+store gets new state
+components reading that state update
+```
+
+### Example
+
+```jsx
+// uiSlice.js
+import { createSlice } from '@reduxjs/toolkit'
+
+const initialState = {
+  sidebarOpen: false,
+}
+
+const uiSlice = createSlice({
+  name: 'ui',
+  initialState,
+  reducers: {
+    toggleSidebar(state) {
+      state.sidebarOpen = !state.sidebarOpen
+    },
+  },
+})
+
+export const { toggleSidebar } = uiSlice.actions
+export default uiSlice.reducer
+```
+
+```jsx
+// store.js
+import { configureStore } from '@reduxjs/toolkit'
+import uiReducer from './uiSlice'
+
+export const store = configureStore({
+  reducer: {
+    ui: uiReducer,
+  },
+})
+```
+
+```jsx
+// component
+import { useDispatch, useSelector } from 'react-redux'
+import { toggleSidebar } from './uiSlice'
+
+function SidebarButton() {
+  const dispatch = useDispatch()
+  const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
+
+  return (
+    <button onClick={() => dispatch(toggleSidebar())}>
+      {sidebarOpen ? 'Close' : 'Open'} Sidebar
+    </button>
+  )
+}
+```
+
+### Very important Redux Toolkit detail
+
+The official docs explain that `createSlice` lets you write "mutating" logic, but it is still producing correct immutable updates because it uses Immer internally. Source: [Redux Toolkit Quick Start](https://redux-toolkit.js.org/tutorials/quick-start)
+
+That means:
+
+```jsx
+state.sidebarOpen = !state.sidebarOpen
+```
+
+looks mutative, but Redux Toolkit safely converts it into immutable update logic.
+
+---
+
+## 17. `configureStore`, `createSlice`, `useSelector`, `useDispatch`
+
+These four should be crystal clear.
+
+### `configureStore`
+
+Sets up the Redux store in the recommended modern way.
+
+Think:
+
+```txt
+main Redux setup point
+```
+
+### `createSlice`
+
+Creates:
+
+- slice name
+- initial state
+- reducers
+- generated action creators
+
+### `useSelector`
+
+Used to read data from the Redux store.
+
+Example:
+
+```jsx
+const currentUser = useSelector((state) => state.auth.currentUser)
+```
+
+### `useDispatch`
+
+Used to dispatch actions.
+
+The React Redux docs describe it simply: it returns a reference to the store's `dispatch` function. Source: [React Redux Hooks](https://react-redux.js.org/api/hooks)
+
+Example:
+
+```jsx
+const dispatch = useDispatch()
+dispatch(toggleSidebar())
+```
+
+### Interview answer
+
+```txt
+configureStore creates the Redux store, createSlice defines a named piece of state and the reducers that update it, useSelector reads values from the store, and useDispatch sends actions to update the store.
+```
+
+---
+
+## 18. Async Redux - What You Need to Know at This Level
+
+Since your resume/project already mentions Redux, one more thing matters:
+
+```txt
+basic async Redux awareness
+```
+
+### `createAsyncThunk`
+
+Redux Toolkit provides `createAsyncThunk` for async logic tied to Redux flows.
+
+At your level, you should know:
+
+- it is used for async actions in Redux
+- it usually pairs with pending/fulfilled/rejected states
+- many real company projects use this pattern
+
+### But here is the important Week 3 decision
+
+For this roadmap:
+
+- `React Query` should handle most server data fetching
+- `Redux` should not try to replace React Query for every API list
+
+### So what should you do?
+
+Know `createAsyncThunk` at a working awareness level for interview and resume defense.
+
+But for this roadmap's Week 3 user-management module:
+
+- server lists and CRUD fetch flow -> prefer `React Query`
+- shared client state -> prefer `Redux`
+
+This keeps the architecture cleaner.
+
+---
+
+## 19. React Query - Why It Exists
+
+The TanStack docs describe it like this: it makes fetching, caching, synchronizing, and updating server state easier. That wording matters because it tells you the real problem it solves: server state, not just "fetching". Source: [TanStack Query Overview](https://tanstack.com/query/latest/docs/framework/react/overview)
 
 ### Why plain `useState` + `useEffect` becomes painful at scale
 
@@ -664,10 +1187,9 @@ With manual fetching, you keep rewriting:
 
 - loading state
 - error state
-- refetch logic
 - retry logic
 - cache thinking
-- stale data handling
+- stale-data handling
 - mutation refresh behavior
 
 ### React Query mental model
@@ -689,21 +1211,21 @@ It helps with:
 
 React Query is not replacing all state.
 
-You still use normal React state for client state like:
+You still use:
 
-- search input text
-- selected filter in the UI
-- modal open/close
+- `useState` for local state
+- `Context` for lighter shared client state
+- `Redux` for more structured global client state
 
-React Query mainly helps with server state.
+React Query mainly helps with:
+
+- server state
 
 ---
 
-## 13. `useQuery` - The List Fetching Mental Model
+## 20. `useQuery` - The List Fetching Mental Model
 
-The docs say `queryKey` is required, and the query automatically updates when that key changes. That gives you the cleanest memory line for Week 3. Source: [TanStack Query useQuery](https://tanstack.com/query/latest/docs/framework/react/reference/useQuery)
-
-### Memory line
+Memory line:
 
 ```txt
 queryKey = identity of the data
@@ -732,7 +1254,7 @@ If:
 - role changes
 - debounced search changes
 
-then the query key changes, and React Query treats it as a different query state.
+then the query key changes, and React Query treats it as different query state.
 
 ### Example render usage
 
@@ -754,9 +1276,9 @@ return <UserList users={usersQuery.data} />
 
 ---
 
-## 14. `useMutation` and Query Invalidation
+## 21. `useMutation` and Query Invalidation
 
-The docs describe `mutationFn` as the async function that performs the task. Then after mutation success, you typically invalidate related queries. Source: [TanStack Query useMutation](https://tanstack.com/query/latest/docs/framework/react/reference/useMutation), [TanStack Query Query Invalidation](https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation)
+After a successful create, update, or delete, the cached list may be outdated.
 
 ### Example
 
@@ -773,51 +1295,132 @@ const deleteUserMutation = useMutation({
 
 ### What invalidation means
 
-The docs explain that invalidating a query:
-
-- marks it stale
-- and if it is being used on screen, it may refetch in the background
-
-That is exactly why invalidation is better than manual refresh hacks everywhere.
+It marks matching query data as stale so React Query can refetch fresh data when needed.
 
 ### Interview answer
 
 ```txt
-After a successful create, update, or delete, I invalidate the related users query so the cached list becomes stale and React Query can refetch fresh server data.
+After a successful create, update, or delete, I invalidate the related users query so the list cache becomes stale and React Query can refresh it with fresh server data.
 ```
 
 ---
 
-## 15. `useEffect` vs React Query - Do Not Mix Them Incorrectly
+## 22. Local State vs Context vs Redux vs React Query
 
-This confusion is common.
+This is one of the most important interview tables for your current level.
 
-### Use manual `useEffect` when you are learning:
+### `useState`
 
-- how fetch lifecycle works
-- how cleanup works
-- how loading/error/empty branching works
+Use when:
 
-### Prefer React Query in the real module for:
+- only one component or one small area owns the state
 
-- list fetches
-- detail fetches
-- create/update/delete flows
-- caching and invalidation
+Examples:
 
-### Best learning order
+- input field
+- modal open/close
+- selected tab
 
-1. build one manual fetch screen with `useEffect`
-2. understand async UI states properly
-3. then upgrade the real module to React Query
+### Context API
 
-That matches your roadmap and makes the concepts stick properly.
+Use when:
+
+- many components need the same value
+- value is relatively stable or app-level
+- you mainly want to avoid prop drilling
+
+Examples:
+
+- theme
+- current user shell
+- auth helper methods
+
+### Redux Toolkit
+
+Use when:
+
+- state is truly global or cross-feature
+- updates should be predictable and structured
+- many components read and update it
+
+Examples:
+
+- auth/session shell in a bigger app
+- sidebar/layout state
+- complex shared UI state
+- role/permissions shell
+
+### React Query
+
+Use when:
+
+- data comes from backend
+- it needs caching, refetching, invalidation, or stale-data handling
+
+Examples:
+
+- users list
+- subscriptions
+- plans
+- payments list
+
+### Clean interview answer
+
+```txt
+I use local state for component-only values, Context for lighter shared app-level values, Redux Toolkit for more structured global client state, and React Query for server state like fetched lists and CRUD data that need caching and invalidation.
+```
 
 ---
 
-## 16. Search, Filters, and Pagination - One Combined Mental Model
+## 23. Loading, Error, Success, Empty - Treat It Like a State Machine
 
-Do not think of these as three unrelated tasks.
+Most weak API UIs only think in two states:
+
+- data
+- no data
+
+That is not enough.
+
+### Better model
+
+```txt
+idle
+loading
+error
+success-with-data
+success-but-empty
+```
+
+### Why loading is not empty
+
+These are totally different:
+
+- loading = request still running
+- empty = request finished correctly but returned zero usable items
+
+### Example branching order
+
+```jsx
+if (loading) {
+  return <p>Loading users...</p>
+}
+
+if (error) {
+  return <p>{error}</p>
+}
+
+if (users.length === 0) {
+  return <p>No users found.</p>
+}
+
+return <UserList users={users} />
+```
+
+---
+
+## 24. Search, Filters, and Pagination - One Combined Mental Model
+
+Do not think of these as three unrelated topics.
 
 All three answer one question:
 
@@ -829,20 +1432,14 @@ which slice of data should the user see right now?
 
 Text-based narrowing.
 
-Example:
-
-- search by user name
-- search by email
-
 ### Filters
 
 Rule-based narrowing.
 
-Example:
+Examples:
 
 - role = admin
 - status = active
-- department = frontend
 
 ### Pagination
 
@@ -854,31 +1451,11 @@ When search or filters change, page usually should reset to `1`.
 
 Why:
 
-If user is on page `5` and new filter leaves only 1 page of results, page `5` no longer makes sense.
-
-### Concrete example
-
-Suppose:
-
-- current page = `4`
-- user searches "nir"
-- filtered data becomes very small
-
-Then correct logic is often:
-
-```jsx
-setPage(1)
-```
-
-not:
-
-```txt
-stay on page 4 and show confusion
-```
+If user is on page `5` and a new filter leaves only 1 page of results, page `5` no longer makes sense.
 
 ---
 
-## 17. Debounced Search - Practical Intuition
+## 25. Debounced Search - Practical Intuition
 
 Debounce means:
 
@@ -899,16 +1476,11 @@ Without debounce, typing:
 n i r m a l
 ```
 
-might trigger 6 separate requests.
+might trigger 6 separate requests or heavy recalculations.
 
-With debounce, only the final intended input may trigger the actual fetch/filter.
+With debounce, only the more final intended input triggers the expensive logic.
 
 ### Example thinking
-
-You usually have:
-
-- raw input state
-- debounced version of that state
 
 ```jsx
 const [searchTerm, setSearchTerm] = useState('')
@@ -929,11 +1501,9 @@ searchTerm directly on every keystroke
 
 ---
 
-## 18. URL Query Sync - Why It Feels More Real
+## 26. URL Query Sync - Why It Feels More Real
 
-React Router’s `useSearchParams` returns the current URL search params and a function to update them, and setting them causes a navigation. That is the key official behavior to remember. Source: [React Router useSearchParams](https://reactrouter.com/api/hooks/useSearchParams)
-
-### Example URL
+Example URL:
 
 ```txt
 /users?search=nir&page=2&role=frontend
@@ -944,7 +1514,7 @@ React Router’s `useSearchParams` returns the current URL search params and a f
 - refresh keeps the same view
 - link becomes shareable
 - browser back/forward works meaningfully
-- current state is visible in URL
+- current state becomes visible in URL
 
 ### Example mental usage
 
@@ -956,22 +1526,12 @@ const role = searchParams.get('role') || 'all'
 const search = searchParams.get('search') || ''
 ```
 
-Then when user updates filters:
-
-```jsx
-setSearchParams({
-  search: newSearch,
-  role: newRole,
-  page: '1',
-})
-```
-
-You do not need to master every detail now.
-Just understand the pattern.
+You do not need mastery here yet.
+You need pattern familiarity.
 
 ---
 
-## 19. Performance Without Becoming Hook-Crazy
+## 27. Performance Without Becoming Hook-Crazy
 
 The React docs clearly say you should rely on `useMemo` and `useCallback` only as performance optimizations, not as logic crutches. If code only works because of them, something deeper is wrong. Sources: [React useMemo](https://react.dev/reference/react/useMemo), [React useCallback](https://react.dev/reference/react/useCallback)
 
@@ -990,41 +1550,37 @@ Then optimize the correct place.
 
 ### `useMemo`
 
-Use when you want to avoid recomputing expensive derived values.
+Good for expensive derived values.
 
-Good example:
+Example:
 
 ```jsx
-const visibleUsers = useMemo(() => {
-  return users
-    .filter((user) => user.role === selectedRole || selectedRole === 'all')
-    .filter((user) =>
-      user.name.toLowerCase().includes(debouncedSearch.toLowerCase())
-    )
-}, [users, selectedRole, debouncedSearch])
+const filteredUsers = useMemo(() => {
+  return users.filter((user) =>
+    user.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+  )
+}, [users, debouncedSearch])
 ```
 
 ### `useCallback`
 
-Use when function identity matters.
+Good when function identity actually matters.
 
-Good example:
+Example:
 
 ```jsx
-const handleDelete = useCallback((userId) => {
-  deleteUserMutation.mutate(userId)
+const handleDelete = useCallback((id) => {
+  deleteUserMutation.mutate(id)
 }, [deleteUserMutation])
 ```
 
-This becomes more useful when passing the handler to memoized child rows.
-
 ### `React.memo`
 
-Use when:
+Useful when:
 
 - child rendering is expensive
 - props are stable enough
-- skipping rerender gives real benefit
+- rerender skipping gives real benefit
 
 ### When not to optimize
 
@@ -1032,17 +1588,11 @@ Do not optimize:
 
 - tiny calculations
 - small components with no lag
-- code only because a hook exists
-
-### Very clean interview line
-
-```txt
-I do not optimize by default. I first identify unnecessary rerenders or expensive derived calculations, then I use useMemo, useCallback, or React.memo only where they solve a real problem.
-```
+- code only because the hook exists
 
 ---
 
-## 20. State Design Maturity - Source of Truth Thinking
+## 28. State Design Maturity - Source of Truth Thinking
 
 Week 3 is also about getting out of beginner state design mistakes.
 
@@ -1075,23 +1625,6 @@ Then derive:
 - `visibleUsers`
 - `totalPages`
 
-### Example
-
-```jsx
-const filteredUsers = useMemo(() => {
-  return users.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
-  )
-}, [users, search])
-
-const totalPages = Math.ceil(filteredUsers.length / pageSize)
-
-const currentPageUsers = filteredUsers.slice(
-  (page - 1) * pageSize,
-  page * pageSize
-)
-```
-
 ### Memory line
 
 ```txt
@@ -1101,7 +1634,7 @@ derive views
 
 ---
 
-## 21. Clean Architecture for This Week
+## 29. Clean Architecture for This Week
 
 The roadmap gives:
 
@@ -1171,8 +1704,8 @@ Examples:
 
 ### `types`
 
-Mainly for TypeScript-oriented shared models.
-For your current JS-first approach, understand the purpose, keep it light.
+Mainly for shared data shape definitions in TS-oriented setups.
+For your current JS-first path, understand the purpose and keep it light.
 
 ### Memory line
 
@@ -1186,11 +1719,14 @@ utils help with pure logic
 
 ---
 
-## 22. Common Week 3 Mistakes
+## 30. Common Week 3 Mistakes
 
 - using `useEffect` for calculations that should happen during render
 - forcing empty dependency arrays to hide bugs
 - forgetting that Strict Mode can run an extra setup+cleanup cycle in development
+- using Context for everything blindly
+- using Redux for every tiny local state
+- trying to make Redux replace React Query completely
 - not separating loading, error, and empty states
 - storing too much redundant derived state
 - using React Query without understanding query keys
@@ -1201,12 +1737,15 @@ utils help with pure logic
 
 ---
 
-## 23. Week 3 Priority Filter - Theory Side
+## 31. Week 3 Priority Filter - Theory Side
 
 ### Must not skip
 
 - `useEffect` dependency and cleanup clarity
 - manual fetch lifecycle understanding
+- Context API basics
+- Redux Toolkit basics
+- local state vs Context vs Redux vs React Query distinction
 - loading vs error vs empty distinction
 - React Query basic mental model
 - query key + invalidation understanding
@@ -1215,15 +1754,18 @@ utils help with pure logic
 
 ### Can keep light
 
+- deeper Context optimization details
+- advanced Redux middleware details
+- heavy `createAsyncThunk` patterns
 - deep cache tuning
 - edge-case memoization details
-- advanced URL-state abstractions
 
 ### Safe to postpone
 
 - advanced optimistic updates
 - infinite queries
 - heavy prefetching strategy
+- very advanced Redux architecture patterns
 - deeper TypeScript modeling
 
 ### Enough for interview survival
@@ -1232,17 +1774,18 @@ If you can explain these clearly, you are in a strong survival zone:
 
 1. why `useEffect` exists
 2. when cleanup matters
-3. why loading, error, and empty are different
-4. what React Query solves
-5. why query keys matter
-6. why invalidation is needed after mutation
-7. why pagination resets after filter/search changes
-8. why redundant derived state is risky
-9. why optimization should be problem-driven
+3. what Context solves
+4. why Redux Toolkit is useful
+5. why React Query is different from Redux
+6. why loading, error, and empty are different
+7. what query keys do
+8. why invalidation matters
+9. why pagination resets after filter/search changes
+10. why redundant derived state is risky
 
 ---
 
-## 24. Fast Interview Explanation Pack
+## 32. Fast Interview Explanation Pack
 
 ### What is `useEffect`?
 
@@ -1250,22 +1793,22 @@ If you can explain these clearly, you are in a strong survival zone:
 useEffect is used to synchronize a component with external systems like APIs, timers, subscriptions, or browser APIs. It runs after render.
 ```
 
-### Why do effects need cleanup?
+### What problem does Context solve?
 
 ```txt
-Cleanup stops or undoes what the effect started, such as clearing timers, removing listeners, aborting requests, or disconnecting subscriptions.
+Context helps avoid prop drilling for shared app-level values by letting deeply nested components read values without manually passing them through every layer.
 ```
 
-### Why not put everything in `useEffect`?
+### When would you use Redux Toolkit instead of Context?
 
 ```txt
-Because render logic and derived values should stay in normal React rendering. Effects are mainly for external synchronization.
+I would use Redux Toolkit when global client state becomes more structured, cross-feature, and update-heavy, and I want predictable action-driven updates, slices, and clearer debugging.
 ```
 
-### Why React Query?
+### Why not use Redux for fetched server lists?
 
 ```txt
-Server state is different from normal local state because it can become stale, needs refetching, and often benefits from caching and invalidation. React Query manages those concerns much better than manual useEffect everywhere.
+Because React Query is better suited for server state like fetched lists, caching, invalidation, and stale-data handling. Redux is more appropriate for structured global client state.
 ```
 
 ### What is a query key?
@@ -1277,7 +1820,7 @@ A query key identifies a specific piece of fetched data in React Query. If value
 ### Why invalidate after mutation?
 
 ```txt
-Because create, update, or delete actions can make cached list data outdated. Invalidating tells React Query to mark it stale and refetch fresh data when needed.
+Because create, update, or delete actions can make cached list data outdated. Invalidating tells React Query to mark it stale and refresh with newer server data.
 ```
 
 ### When would you use `useMemo`?
@@ -1286,40 +1829,36 @@ Because create, update, or delete actions can make cached list data outdated. In
 When I have an expensive derived calculation like filtering and sorting a large list, and I want to avoid recomputing it unnecessarily.
 ```
 
-### When would you avoid `useCallback`?
-
-```txt
-If function identity is not actually causing a problem, I avoid adding it just for the sake of using the hook.
-```
-
 ---
 
-## 25. Revision Questions
+## 33. Revision Questions
 
-1. What is the difference between client state and server state?
+1. What is the difference between local state, shared client state, and server state?
 2. Why does React say `useEffect` is for synchronizing with external systems?
 3. What are the three dependency-array forms?
 4. Why do objects/functions sometimes cause extra effect reruns?
 5. Why does Strict Mode sometimes make effects look like they ran twice?
 6. Why is cleanup important for fetches, timers, and listeners?
-7. Why should you not make the effect callback itself `async`?
-8. Why is loading different from empty?
-9. What problems does React Query solve?
-10. What is a query key?
-11. Why invalidate queries after mutation?
-12. Why should search/filter changes often reset page to `1`?
-13. What is redundant derived state?
-14. When should `useMemo` help, and when should it not?
-15. What is the difference between `pages`, `components`, `hooks`, and `services`?
+7. What problem does Context solve?
+8. Why is Context not automatically a replacement for Redux?
+9. What are store, slice, reducer, selector, and dispatch?
+10. Why is Redux Toolkit preferred over older raw Redux patterns?
+11. Why is React Query better for server state?
+12. What is query invalidation?
+13. Why should search/filter changes often reset page to `1`?
+14. What is redundant derived state?
+15. When should `useMemo` help, and when should it not?
 
 ---
 
-## 26. Final Week 3 Mental Model
+## 34. Final Week 3 Mental Model
 
 Try to remember Week 3 like this:
 
 ```txt
-render describes UI
+useState handles local UI state
+Context handles lighter shared client state
+Redux Toolkit handles structured global client state
 useEffect handles outside-world sync
 manual fetch teaches async truth
 React Query manages server state better
@@ -1330,4 +1869,4 @@ optimization should solve a real problem
 architecture should separate concerns cleanly
 ```
 
-If this picture is clear in your head, Week 3 will feel much easier while revising.
+If this picture is clear in your head, Week 3 becomes much easier to revise and explain.

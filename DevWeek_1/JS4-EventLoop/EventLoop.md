@@ -166,7 +166,7 @@ Event happens (click) →
 ## 🧠 FINAL RULE
 
 ```
-Promise → Microtaskmtlb
+Promise → Microtask
 fetch   → Web API → Microtask
 Timer   → Web API → Macrotask
 Event   → Web API → Macrotask
@@ -406,6 +406,7 @@ C
 ## Case 1
 
 ```js
+// 1,6,3,4,2,5 -> macro - 2,5 -> micro ->3,4,
 console.log(1);
 
 setTimeout(() => console.log(2));
