@@ -41,6 +41,7 @@ function getOrders(user){
 }
 
 login().then((user) =>{
+    //   return getUser("uixd"); more practical and easy way
     return getUser(user);
 }).then((userdata) =>{
     return getOrders(userdata);

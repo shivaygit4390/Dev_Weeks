@@ -28,6 +28,7 @@ return new Promise((resolve, reject) =>{
 function getOrders(user){
     return new Promise((resolve, reject) =>{
         setTimeout(() =>{
+          // reject("failed purposefully"); //this was task 5
             resolve(["o1", "o2"]);
         },1000)
     })

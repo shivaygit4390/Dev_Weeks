@@ -275,8 +275,8 @@ Create:
 * Force error in 2nd step
 * Confirm:
 
-  * 3rd step is skipped
-  * catch handles error
+* 3rd step is skipped
+* catch handles error
 
 ---
 
